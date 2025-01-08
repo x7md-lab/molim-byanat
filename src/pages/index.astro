@@ -150,6 +150,7 @@ let clubs: String = await fetchCSV(data[0]?.downloadUrl);
 					);
 					elements.forEach(function (element) {
 						if (document.getElementById("checkbox1").checked) {
+							checkbox2.checked = false;
 							element.style.display = "none";
 						} else {
 							element.style.display = "block";
@@ -164,6 +165,7 @@ let clubs: String = await fetchCSV(data[0]?.downloadUrl);
 					);
 					elements.forEach(function (element) {
 						if (document.getElementById("checkbox2").checked) {
+							checkbox1.checked = false;
 							element.style.display = "none";
 						} else {
 							element.style.display = "block";
