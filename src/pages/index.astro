@@ -1,16 +1,176 @@
 ---
+import "../output.css";
+import { undefined } from "astro:schema";
 
+async function fetchData() {
+	try {
+		const response = await fetch(
+			"https://open.data.gov.sa/data/api/datasets/resources?version=-1&dataset=1b78a94e-c78d-4f46-af68-d737334ee88c",
+			{
+				method: "GET",
+				headers: new Headers({
+					Accept: "application/json",
+				}),
+			},
+		);
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		return await response.json();
+		console.log(data);
+	} catch (error) {
+		console.error("Error:", error);
+	}
+}
+
+async function fetchCSV(url) {
+	try {
+		const response = await fetch(url, {
+			method: "GET",
+		});
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		return await response.text();
+		console.log(data);
+	} catch (error) {
+		console.error("Error:", error);
+	}
+}
+
+let data = undefined;
+const dataFetch = (await fetchData()) || null;
+if (dataFetch) {
+	//@ts-expect-error
+	data = [...dataFetch.resources].filter((i) => {
+		return i.format == "CSV";
+	});
+	console.log(data[0].downloadUrl);
+}
+let clubs: String = await fetchCSV(data[0]?.downloadUrl);
 ---
 
-<html lang="en">
+<!doctype html>
+<html lang="ar" dir="rtl">
 	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>اندية الجامعة</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			html {
+				font-family: "IBM Plex Sans Arabic", serif;
+			}
+		</style>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<header>
+			<nav class="min-h-[75px] shadow-md flex flex-row items-center">
+				<h1 class="mx-4 font-extrabold">
+					الأندية الطلابية بجامعة أم القرى
+				</h1>
+			</nav>
+		</header>
+		<div id="app">
+			<!-- <pre>
+			{clubs}
+		</pre> -->
+			<div class="py-4">
+				<div class="p-6">
+					<div class="mb-4">
+						<h2 class="text-lg font-semibold">وظائف</h2>
+					</div>
+					<div class="flex space-x-4">
+						<label class="inline-flex items-center">
+							<input
+								type="checkbox"
+								id="checkbox1"
+								class="form-checkbox text-blue-600"
+							/>
+							<span class="ml-2 px-2">ثقافي</span>
+						</label>
+						<label class="inline-flex items-center">
+							<input
+								type="checkbox"
+								id="checkbox2"
+								class="form-checkbox text-blue-600"
+							/>
+							<span class="ml-2 px-2">تخصصي</span>
+						</label>
+					</div>
+				</div>
+			</div>
+			<section
+				class="flex flex-col justify-center items-center gap-5 w-full py-4 md:px-12"
+			>
+				{
+					clubs?.split("\n").map((item, idx) => (
+						<>
+							<div
+								data-type={item.split(",")[1]?.trim()}
+								hidden={idx == 0 || !item}
+								class="max-w-sm rounded shadow-lg p-6 bg-white min-w-full"
+							>
+								<h2 class="text-xl font-extrabold mb-2">
+									{item.split(",")[0]}
+								</h2>
+								<span
+									class:list={[
+										"inline-block my-3 rounded-full px-3 py-1 text-sm font-normal",
+										item.split(",")[1]?.trim() == "ثقافي" &&
+											"text-blue-700 bg-blue-200",
+										item.split(",")[1]?.trim() !==
+											"ثقافي" &&
+											"text-rose-400 bg-rose-100",
+									]}
+								>
+									{item.split(",")[1]}
+								</span>
+							</div>
+						</>
+					))
+				}
+			</section>
+		</div>
+		<script is:inline>
+			document
+				.getElementById("checkbox1")
+				.addEventListener("change", function () {
+					var elements = document.querySelectorAll(
+						'[data-type="تخصصي"]',
+					);
+					elements.forEach(function (element) {
+						if (document.getElementById("checkbox1").checked) {
+							element.style.display = "none";
+						} else {
+							element.style.display = "block";
+						}
+					});
+				});
+			document
+				.getElementById("checkbox2")
+				.addEventListener("change", function () {
+					var elements = document.querySelectorAll(
+						'[data-type="ثقافي"]',
+					);
+					elements.forEach(function (element) {
+						if (document.getElementById("checkbox2").checked) {
+							element.style.display = "none";
+						} else {
+							element.style.display = "block";
+						}
+					});
+				});
+		</script>
 	</body>
 </html>
