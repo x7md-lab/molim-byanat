@@ -70,6 +70,7 @@ let clubs: String = await fetchCSV(data[0]?.downloadUrl);
 			html {
 				font-family: "IBM Plex Sans Arabic", serif;
 			}
+			[data-type="ثقافي"], [data-type="تخصصي"] { display: block; }
 		</style>
 	</head>
 	<body>
@@ -87,7 +88,7 @@ let clubs: String = await fetchCSV(data[0]?.downloadUrl);
 			<div class="py-4">
 				<div class="p-6">
 					<div class="mb-4">
-						<h2 class="text-lg font-semibold">وظائف</h2>
+						<h2 class="text-lg font-semibold">تصفية:</h2>
 					</div>
 					<div class="flex space-x-4">
 						<label class="inline-flex items-center">
